@@ -32,7 +32,8 @@ class StubSchemaRepository(SchemasRepository):
     def get_schemas(self, user_id: int) -> List[Schema]:
         return [schema for schema in self.schemas.values() if schema.user_id == user_id]
 
-    def create_schema(self, schema: Schema) -> Schema:
+    def create_schema(self, user_id: int) -> Schema:
+        schema = Schema(user_id=user_id, id=len(self.schemas) + 1)
         self.schemas[schema.id] = schema
         return schema
 

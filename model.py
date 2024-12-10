@@ -1,15 +1,20 @@
-class WorkStation:
-    def __init__(self, name: str, demand: float, x: float, y: float):
-        self.name = name
-        self.demand = demand
-        self.x = x
-        self.y = y
+from typing import Optional, List, Set
+from pydantic import BaseModel
+
+
+# --------------------------- WorkStation ---------------------------
+
+class WorkStation(BaseModel):
+    name: str
+    demand: float
+    x: float
+    y: float
 
     def set_position(self, x: float, y: float):
         self.x = x
         self.y = y
 
-    def get_position(self) -> tuple:
+    def get_position(self) -> tuple[float, float]:
         return self.x, self.y
 
     def set_name(self, name: str):
@@ -24,23 +29,6 @@ class WorkStation:
     def get_demand(self) -> float:
         return self.demand
 
-    def to_json(self) -> dict:
-        return {
-            "name": self.name,
-            "demand": self.demand,
-            "x": self.x,
-            "y": self.y
-        }
-
-    @staticmethod
-    def from_json(data: dict) -> 'WorkStation':
-        return WorkStation(
-            name=data["name"],
-            demand=data["demand"],
-            x=data["x"],
-            y=data["y"]
-        )
-
     def __eq__(self, other):
         if not isinstance(other, WorkStation):
             return False
@@ -53,11 +41,12 @@ class WorkStation:
         return hash((self.name, self.demand, self.x, self.y))
 
 
-class TransportationCost:
-    def __init__(self, from_station: WorkStation, to_station: WorkStation, cost: float):
-        self.from_station = from_station
-        self.to_station = to_station
-        self.cost = cost
+# --------------------------- TransportationCost ---------------------------
+
+class TransportationCost(BaseModel):
+    from_station: WorkStation
+    to_station: WorkStation
+    cost: float
 
     def get_from(self) -> WorkStation:
         return self.from_station
@@ -71,21 +60,6 @@ class TransportationCost:
     def set_cost(self, cost: float):
         self.cost = cost
 
-    def to_json(self) -> dict:
-        return {
-            "from_station": self.from_station.to_json(),
-            "to_station": self.to_station.to_json(),
-            "cost": self.cost
-        }
-
-    @staticmethod
-    def from_json(data: dict) -> 'TransportationCost':
-        return TransportationCost(
-            from_station=WorkStation.from_json(data["from_station"]),
-            to_station=WorkStation.from_json(data["to_station"]),
-            cost=data["cost"]
-        )
-
     def __eq__(self, other):
         if not isinstance(other, TransportationCost):
             return False
@@ -97,10 +71,11 @@ class TransportationCost:
         return hash((self.from_station, self.to_station, self.cost))
 
 
-class AMRParameters:
-    def __init__(self, quantity: int, capacity: float):
-        self.quantity = quantity
-        self.capacity = capacity
+# --------------------------- AMRParameters ---------------------------
+
+class AMRParameters(BaseModel):
+    quantity: int
+    capacity: float
 
     def set_quantity(self, quantity: int):
         self.quantity = quantity
@@ -114,27 +89,15 @@ class AMRParameters:
     def get_capacity(self) -> float:
         return self.capacity
 
-    def to_json(self) -> dict:
-        return {
-            "quantity": self.quantity,
-            "capacity": self.capacity
-        }
 
-    @staticmethod
-    def from_json(data: dict) -> 'AMRParameters':
-        return AMRParameters(
-            quantity=data["quantity"],
-            capacity=data["capacity"]
-        )
+# --------------------------- Schema ---------------------------
 
-
-class Schema:
-    def __init__(self, schema_id: int, user_id: int):
-        self.user_id = user_id
-        self.id = schema_id
-        self.workstations = set()
-        self.transportation_costs = set()
-        self.amr_parameters = None
+class Schema(BaseModel):
+    user_id: int
+    id: int
+    workstations: Set[WorkStation] = set()
+    transportation_costs: Set[TransportationCost] = set()
+    amr_parameters: AMRParameters = AMRParameters(quantity=0, capacity=0.0)
 
     def add_workstation(self, station: WorkStation):
         self.workstations.add(station)
@@ -142,7 +105,7 @@ class Schema:
     def remove_workstation(self, station: WorkStation):
         self.workstations.discard(station)
 
-    def get_all_workstations(self) -> list:
+    def get_all_workstations(self) -> List[WorkStation]:
         return list(self.workstations)
 
     def set_transportation_cost(self, cost: TransportationCost):
@@ -151,31 +114,11 @@ class Schema:
     def remove_transportation_cost(self, cost: TransportationCost):
         self.transportation_costs.discard(cost)
 
-    def get_transportation_costs(self) -> list:
+    def get_transportation_costs(self) -> List[TransportationCost]:
         return list(self.transportation_costs)
 
     def set_amr_parameters(self, parameters: AMRParameters):
         self.amr_parameters = parameters
 
-    def get_amr_parameters(self) -> AMRParameters:
+    def get_amr_parameters(self) -> Optional[AMRParameters]:
         return self.amr_parameters
-
-    def to_json(self) -> dict:
-        return {
-            "id": self.id,
-            "user_id": self.user_id,
-            "workstations": [station.to_json() for station in self.workstations],
-            "transportation_costs": [cost.to_json() for cost in self.transportation_costs],
-            "amr_parameters": self.amr_parameters.to_json() if self.amr_parameters else None
-        }
-
-    @staticmethod
-    def from_json(data: dict) -> 'Schema':
-        schema = Schema(schema_id=data["id"], user_id=data["user_id"])
-        schema.workstations = {WorkStation.from_json(ws) for ws in data["workstations"]}
-        schema.transportation_costs = {
-            TransportationCost.from_json(tc) for tc in data["transportation_costs"]
-        }
-        if data["amr_parameters"]:
-            schema.amr_parameters = AMRParameters.from_json(data["amr_parameters"])
-        return schema
