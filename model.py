@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class WorkStation(BaseModel):
     name: str
     demand: float
+    depo_distance: float
     x: float
     y: float
 
@@ -28,6 +29,12 @@ class WorkStation(BaseModel):
 
     def get_demand(self) -> float:
         return self.demand
+
+    def set_depo_distance(self, depo_distance: float):
+        self.depo_distance = depo_distance
+
+    def get_depo_distance(self) -> float:
+        return self.depo_distance
 
     def __eq__(self, other):
         if not isinstance(other, WorkStation):

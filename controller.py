@@ -50,3 +50,8 @@ async def get_schema(schema_id: int, user_token: str):
         return schema
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="localhost", port=8002)
