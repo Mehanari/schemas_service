@@ -1,12 +1,12 @@
 from fastapi import FastAPI, HTTPException, Request
-from AuthenticationService import StubAuthenticationService
+from AuthenticationService import StubAuthenticationService, AuthenticationServiceImpl
 from SchemasRepository import StubSchemaRepository
 from SchemasService import SchemaService
 from SolutionsService import StubSolutionsService
 from model import Schema
 
 repository = StubSchemaRepository()
-auth_service = StubAuthenticationService()
+auth_service = AuthenticationServiceImpl()
 solutions_service = StubSolutionsService()
 schema_service = SchemaService(repository, auth_service, solutions_service)
 app = FastAPI()
