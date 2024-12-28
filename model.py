@@ -6,16 +6,16 @@ from pydantic import BaseModel
 
 class WorkStation(BaseModel):
     name: str
-    demand: float
-    depot_distance: float
-    x: float
-    y: float
+    demand: int
+    depot_distance: int
+    x: int
+    y: int
 
-    def set_position(self, x: float, y: float):
+    def set_position(self, x: int, y: int):
         self.x = x
         self.y = y
 
-    def get_position(self) -> tuple[float, float]:
+    def get_position(self) -> tuple[int, int]:
         return self.x, self.y
 
     def set_name(self, name: str):
@@ -24,16 +24,16 @@ class WorkStation(BaseModel):
     def get_name(self) -> str:
         return self.name
 
-    def set_demand(self, demand: float):
+    def set_demand(self, demand: int):
         self.demand = demand
 
-    def get_demand(self) -> float:
+    def get_demand(self) -> int:
         return self.demand
 
-    def set_depot_distance(self, depo_distance: float):
+    def set_depot_distance(self, depo_distance: int):
         self.depot_distance = depo_distance
 
-    def get_depot_distance(self) -> float:
+    def get_depot_distance(self) -> int:
         return self.depot_distance
 
     def __eq__(self, other):
@@ -53,7 +53,7 @@ class WorkStation(BaseModel):
 class TransportationCost(BaseModel):
     from_station: WorkStation
     to_station: WorkStation
-    cost: float
+    cost: int
 
     def get_from(self) -> WorkStation:
         return self.from_station
@@ -61,10 +61,10 @@ class TransportationCost(BaseModel):
     def get_to(self) -> WorkStation:
         return self.to_station
 
-    def get_cost(self) -> float:
+    def get_cost(self) -> int:
         return self.cost
 
-    def set_cost(self, cost: float):
+    def set_cost(self, cost: int):
         self.cost = cost
 
     def __eq__(self, other):
@@ -82,7 +82,7 @@ class TransportationCost(BaseModel):
 
 class AMRParameters(BaseModel):
     quantity: int
-    capacity: float
+    capacity: int
 
     def set_quantity(self, quantity: int):
         self.quantity = quantity
@@ -90,10 +90,10 @@ class AMRParameters(BaseModel):
     def get_quantity(self) -> int:
         return self.quantity
 
-    def set_capacity(self, capacity: float):
+    def set_capacity(self, capacity: int):
         self.capacity = capacity
 
-    def get_capacity(self) -> float:
+    def get_capacity(self) -> int:
         return self.capacity
 
 
@@ -104,7 +104,7 @@ class Schema(BaseModel):
     id: int
     workstations: Set[WorkStation] = set()
     transportation_costs: Set[TransportationCost] = set()
-    amr_parameters: AMRParameters = AMRParameters(quantity=0, capacity=0.0)
+    amr_parameters: AMRParameters = AMRParameters(quantity=0, capacity=0)
 
     def add_workstation(self, station: WorkStation):
         self.workstations.add(station)

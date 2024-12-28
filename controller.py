@@ -1,4 +1,6 @@
-from fastapi import FastAPI, HTTPException, Request
+from typing import Optional
+
+from fastapi import FastAPI, HTTPException, Request, Header
 from AuthenticationService import StubAuthenticationService, AuthenticationServiceImpl
 from SchemasRepository import StubSchemaRepository
 from SchemasService import SchemaService
@@ -13,8 +15,9 @@ app = FastAPI()
 
 
 @app.post("/schemas/")
-async def create_schema(user_token: str):
+async def create_schema(authorization: Optional[str] = Header(None)):
     try:
+        user_token = authorization.split(" ")[1]
         if not user_token:
             raise ValueError("User token is required")
         created_schema = schema_service.create_schema(user_token)
@@ -24,17 +27,19 @@ async def create_schema(user_token: str):
 
 
 @app.get("/schemas/")
-async def get_all_schemas(user_token: str):
+async def get_all_schemas(authorization: Optional[str] = Header(None)):
     try:
+        user_token = authorization.split(" ")[1]
         schemas = schema_service.get_all_schemas(user_token)
         return schemas
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@app.put("/schemas/{schema_id}")
-async def update_schema(schema: Schema, user_token: str):
+@app.put("/schemas/")
+async def update_schema(schema: Schema, authorization: Optional[str] = Header(None)):
     try:
+        user_token = authorization.split(" ")[1]
         if not user_token:
             raise ValueError("User token is required")
         updated_schema = schema_service.update_schema(schema, user_token)
@@ -44,8 +49,9 @@ async def update_schema(schema: Schema, user_token: str):
 
 
 @app.get("/schemas/{schema_id}")
-async def get_schema(schema_id: int, user_token: str):
+async def get_schema(schema_id: int, authorization: Optional[str] = Header(None)):
     try:
+        user_token = authorization.split(" ")[1]
         schema = schema_service.get_schema(schema_id, user_token)
         return schema
     except ValueError as e:
