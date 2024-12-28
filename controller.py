@@ -1,13 +1,20 @@
 from typing import Optional
 
+import firebase_admin
+from firebase_admin import credentials, firestore
 from fastapi import FastAPI, HTTPException, Request, Header
 from AuthenticationService import StubAuthenticationService, AuthenticationServiceImpl
-from SchemasRepository import StubSchemaRepository
+from SchemasRepository import StubSchemaRepository, FirebaseSchemasRepository
 from SchemasService import SchemaService
 from SolutionsService import StubSolutionsService, SolutionsServiceImpl
 from model import Schema
 
-repository = StubSchemaRepository()
+# Initialize Firebase Admin SDK
+# Use the service account key you downloaded to initialize the SDK
+cred = credentials.Certificate("amr-routes-optimization-firebase-adminsdk-hpd3u-eaed4b8e2a.json")
+firebase_admin.initialize_app(cred)
+
+repository = FirebaseSchemasRepository()
 auth_service = AuthenticationServiceImpl()
 solutions_service = SolutionsServiceImpl()
 schema_service = SchemaService(repository, auth_service, solutions_service)
@@ -23,6 +30,7 @@ async def create_schema(authorization: Optional[str] = Header(None)):
         created_schema = schema_service.create_schema(user_token)
         return created_schema
     except ValueError as e:
+        print(e)
         raise HTTPException(status_code=400, detail=str(e))
 
 
