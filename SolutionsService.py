@@ -18,7 +18,7 @@ class StubSolutionsService(SolutionsService):
 class SolutionsServiceImpl(SolutionsService):
     def mark_solution_obsolete(self, schema_id: int) -> None:
         try:
-            response = requests.put(f"{SOLUTIONS_SERVICE_URL}/mark_solution_obsolete-obsolete/{schema_id}")
+            response = requests.put(f"{SOLUTIONS_SERVICE_URL}/mark_solution_obsolete/{schema_id}")
             if response.status_code != 200:
                 raise Exception(f"Error marking solution as obsolete: {response.json()}")
         except requests.RequestException as e:

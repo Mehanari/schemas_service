@@ -102,24 +102,28 @@ class AMRParameters(BaseModel):
 class Schema(BaseModel):
     user_id: int
     id: int
-    workstations: Set[WorkStation] = set()
-    transportation_costs: Set[TransportationCost] = set()
+    workstations: list[WorkStation] = set()
+    transportation_costs: list[TransportationCost] = set()
     amr_parameters: AMRParameters = AMRParameters(quantity=0, capacity=0)
 
     def add_workstation(self, station: WorkStation):
-        self.workstations.add(station)
+        if station not in self.workstations:
+            self.workstations.append(station)
 
     def remove_workstation(self, station: WorkStation):
-        self.workstations.discard(station)
+        if station in self.workstations:
+            self.workstations.remove(station)
 
     def get_all_workstations(self) -> List[WorkStation]:
         return list(self.workstations)
 
     def set_transportation_cost(self, cost: TransportationCost):
-        self.transportation_costs.add(cost)
+        if cost not in self.transportation_costs:
+            self.transportation_costs.append(cost)
 
     def remove_transportation_cost(self, cost: TransportationCost):
-        self.transportation_costs.discard(cost)
+        if cost in self.transportation_costs:
+            self.transportation_costs.remove(cost)
 
     def get_transportation_costs(self) -> List[TransportationCost]:
         return list(self.transportation_costs)
